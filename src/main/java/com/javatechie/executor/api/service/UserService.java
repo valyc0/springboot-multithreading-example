@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 @Service
 public class UserService {
@@ -40,6 +42,29 @@ public class UserService {
         logger.info("get list of user by "+Thread.currentThread().getName());
         List<User> users=repository.findAll();
         return CompletableFuture.completedFuture(users);
+    }
+
+
+    @Async
+    public Future findAllUsersToT(String id){
+        logger.info("get list of user by "+id+"-"+Thread.currentThread().getName());
+        int time = getRandomNumber(2, 10);
+        time = time*100;
+        logger.info("time "+id+"-"+Thread.currentThread().getName()+"-"+time);
+        try {
+            Thread.sleep(time);
+            
+            logger.info("end "+id+"-"+Thread.currentThread().getName()+"-"+time);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return new AsyncResult<Void>(null);
+        
+    }
+
+    public int getRandomNumber(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
     }
 
     private List<User> parseCSVFile(final MultipartFile file) throws Exception {
